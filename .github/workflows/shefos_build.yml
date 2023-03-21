@@ -1,56 +1,50 @@
 name: shefos_build
 on:
   workflow_dispatch:
-  # schedule:
-  #  - cron:  '30 2 * * *'
+  schedule:
+    - cron:  '30 6 1 * *'
 
 jobs:
   prepare-release:
     runs-on: ubuntu-20.04
     steps:
-      - 
-        uses: styfle/cancel-workflow-action@0.9.0
+      - uses: styfle/cancel-workflow-action@b173b6ec0100793626c2d9e6b90435061f4fc3e5 # tag=0.11.0
         with:
           access_token: ${{ github.token }}
-      - 
-        id: time
-        uses: nanzm/get-time-action@v1.1
+      - id: time
+        uses: nanzm/get-time-action@5fb6a88787f272aeb246a10ebb8fabeb5f3c7b9c # tag=v1.1
         with:
           format: 'YYYYMMDDHHmm'
     outputs:
-      release_tag: ${{ steps.time.outputs.time }}
-  build-release:
+      release_tag: ${{ steps.time.outputs.time }}      
+  release:
     runs-on: ubuntu-20.04
-    needs: [prepare-release]
+    needs: prepare-release    
     strategy:
       matrix:
+        ##### EDIT ME #####
+#        EDITION: [gnome, xfce, kde]
         EDITION: [xfce]
         BRANCH: [stable]
-        SCOPE: [full]
+        SCOPE: [minimal]
+        ###################
     steps:
-      - 
-        uses: styfle/cancel-workflow-action@0.9.0
+      - uses: styfle/cancel-workflow-action@b173b6ec0100793626c2d9e6b90435061f4fc3e5 # tag=0.11.0
         with:
           access_token: ${{ github.token }}
-      - 
-        id: time
-        uses: nanzm/get-time-action@v1.1
-        with:
-          format: 'YY.MM'   
-      -
-        name: image-build-upload
-        uses: manjaro/manjaro-iso-action@main
+      - id: image-build
+        uses: manjaro/manjaro-iso-action@bba8497cc673aafdb09f6c1e4466feea8ead6dbf # tag=v2.8
         with:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: ${{ steps.time.outputs.time }}
+          version: "3.4"
           kernel: linux61
-          code-name: "Custom-Build"
+          code-name: "ShefOS"
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}
-      -
-        name: rollback
+      - name: rollback
         if: ${{ failure() || cancelled() }}
         run: |
           echo ${{ github.token }} | gh auth login --with-token
           gh release delete ${{ needs.prepare-release.outputs.release_tag }} -y --repo ${{ github.repository }}
+          git push --delete origin ${{ needs.prepare-release.outputs.release_tag }}
