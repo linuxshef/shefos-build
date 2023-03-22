@@ -2,11 +2,13 @@ name: iso_build
 on:
   workflow_dispatch:
    schedule:
-    - cron: "0 */4 * * *"
+    - cron:  "0 */4 * * *"
 
 jobs:
   prepare-release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+
     steps:
       - 
         uses: styfle/cancel-workflow-action@0.9.0
@@ -26,7 +28,7 @@ jobs:
       matrix:
         EDITION: [xfce]
         BRANCH: [stable]
-        SCOPE: [minimal,full]
+        SCOPE: [minimal]
     steps:
       - 
         uses: styfle/cancel-workflow-action@0.9.0
@@ -38,16 +40,16 @@ jobs:
         with:
           format: 'YY.MM'   
       -
-        name: ShefOS
-        uses: linuxshef/shefos-build
+        name: image-build-upload
+        uses: manjaro/manjaro-iso-action@main
         with:
-#          edition: ${{ matrix.edition }}
-#          branch: ${{ matrix.branch }}
-#          scope: ${{ matrix.scope }}
-#          version: ${{ steps.time.outputs.time }}
+  #        edition: ${{ matrix.edition }}
+  #        branch: ${{ matrix.branch }}
+  #        scope: ${{ matrix.scope }}
+  #        version: ${{ steps.time.outputs.time }}
           kernel: linux61
           code-name: "ShefOS"
-#          release-tag: ${{ needs.prepare-release.outputs.release_tag }}
+#         release-tag: ${{ needs.prepare-release.outputs.release_tag }}
 #      -
 #        name: rollback
 #        if: ${{ failure() || cancelled() }}
