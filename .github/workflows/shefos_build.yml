@@ -4,7 +4,7 @@ on:
   schedule:
      - cron: "0 */4 * * *"
 
-jobs:
+- jobs:
   prepare-release:
     runs-on: ubuntu-20.04
     timeout-minutes: 240
