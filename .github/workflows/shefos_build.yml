@@ -51,7 +51,7 @@ jobs:
           path: shefos-build
           kernel: linux61
           code-name: "ShefOS"
-    #      release-tag: ${{ needs.prepare-release.outputs.release_tag }}
+#      release-tag: ${{ needs.prepare-release.outputs.release_tag }}
 #      -
 #        name: rollback
 #        if: ${{ failure() || cancelled() }}
