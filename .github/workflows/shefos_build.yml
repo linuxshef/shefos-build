@@ -48,7 +48,7 @@ jobs:
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
           version: ${{ steps.time.outputs.time }}-development
-          kernel: linux519
+          kernel: linux62
           code-name: "Testing-Build"
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}
       -
