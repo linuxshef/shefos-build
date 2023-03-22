@@ -1,4 +1,4 @@
-name: iso_build
+name: shefos-build
 on:
   workflow_dispatch:
   # remove if you don't want to build on a schedule
@@ -31,9 +31,9 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####      
-        EDITION: [cinnamon, gnome]
-        BRANCH: [stable, testing]
-        SCOPE: [minimal,full]
+        EDITION: [i3]
+        BRANCH: [stable]
+        SCOPE: [minimal]
         ###################
     steps:
       # cancel already running instances of the same action on the currently working on branch
@@ -46,9 +46,8 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.0"
-          kernel: linux510
-          code-name: "Ornara"
+          kernel: linux61
+          code-name: "O"
           # providing a release-tag allows for github releases
           release-tag: ${{ needs.prepare-release.outputs.release_tag }}
       # delete the github release in case of cancellation or failure
