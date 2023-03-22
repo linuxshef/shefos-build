@@ -2,16 +2,22 @@ name: shefos_build
 on:
   workflow_dispatch:
   schedule:
-    - cron:  '30 2 * * *'
+     - cron: "0 */4 * * *"
 
 jobs:
   prepare-release:
     runs-on: ubuntu-20.04
+    timeout-minutes: 240
     steps:
       - 
         uses: styfle/cancel-workflow-action@0.9.0
-        with:
-          access_token: ${{ github.token }}
+#        with:
+#          access_token: ${{ github.token }}
+      -
+      
+      permissions:
+      contents: write
+      
       - 
         id: time
         uses: nanzm/get-time-action@v1.1
@@ -41,13 +47,11 @@ jobs:
         name: image-build-upload
         uses: manjaro/manjaro-iso-action@main
         with:
-          edition: ${{ matrix.edition }}
-          branch: ${{ matrix.branch }}
-          scope: ${{ matrix.scope }}
-          version: ${{ steps.time.outputs.time }}-development
+          repository: linuxshef/shefos-build
+          path: shefos-build
           kernel: linux61
           code-name: "ShefOS"
-          release-tag: ${{ needs.prepare-release.outputs.release_tag }}
+    #      release-tag: ${{ needs.prepare-release.outputs.release_tag }}
 #      -
 #        name: rollback
 #        if: ${{ failure() || cancelled() }}
