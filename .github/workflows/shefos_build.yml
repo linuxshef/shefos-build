@@ -1,10 +1,21 @@
-name: iso_build
+name: ShefOS
 on:
   workflow_dispatch:
    schedule:
     - cron:  "0 */4 * * *"
-
+   workflow_dispatch:
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+
+    permissions:
+      contents: write
+
+    container:
+      image: manjaro:latest
+      options: --privileged
+      
   prepare-release:
     runs-on: ubuntu-latest
     timeout-minutes: 240
