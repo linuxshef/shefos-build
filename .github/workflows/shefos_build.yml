@@ -1,4 +1,4 @@
-name: ShefOS
+name: iso_build
 on:
   workflow_dispatch:
   # remove if you don't want to build on a schedule
@@ -19,21 +19,21 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - id: time
-        uses: nanzm/get-time-action@v0.9.0
+        uses: nanzm/get-time-action@v1.1
         with:
           format: 'YYYYMMDDHHmm'
     outputs:
       # generate a common tag to be used in all elements of the matrix strategy
       release_tag: ${{ steps.time.outputs.time }}      
   release:
-    runs-on: last-release
+    runs-on: ubuntu-20.04
     needs: prepare-release    
     strategy:
       matrix:
         ##### EDIT ME #####      
-        EDITION: [xfce]
-        BRANCH: [stable]
-        SCOPE: [minimal]
+        EDITION: [cinnamon, gnome]
+        BRANCH: [stable, testing]
+        SCOPE: [minimal,full]
         ###################
     steps:
       # cancel already running instances of the same action on the currently working on branch
@@ -46,9 +46,9 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "3.5"
-          kernel: linux61
-          code-name: "MyIso"
+          version: "21.0"
+          kernel: linux510
+          code-name: "Ornara"
           # providing a release-tag allows for github releases
 - id: image-build
   uses: manjaro/manjaro-iso-action@main
@@ -56,16 +56,13 @@ jobs:
     ...
     gpg-secret-key-base64: ${{ secrets.gpg_secret_base64 }}
     gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
-       
 
-  - id: image-build
-  uses: manjaro/manjaro-iso-action@main
-  with:
-    ...
-    release-tag: ${{ needs.prepare-release.outputs.release_tag }}
-- name: rollback github release
-  if: ${{ failure() || cancelled() }}
-  run: |
-    echo ${{ github.token }} | gh auth login --with-token
-    gh release delete ${{ needs.prepare-release.outputs.release_tag }} -y --repo ${{ github.repository }}
-    git push --delete origin ${{ needs.prepare-release.outputs.release_tag }}
+          release-tag: ${{ needs.prepare-release.outputs.release_tag }}
+      # delete the github release in case of cancellation or failure
+      # refer to .github/workflows/cleanup-test-release.yml for rollback strategies concerning the other distribution channels
+      - name: rollback github release
+        if: ${{ failure() || cancelled() }}
+        run: |
+          echo ${{ github.token }} | gh auth login --with-token
+          gh release delete ${{ needs.prepare-release.outputs.release_tag }} -y --repo ${{ github.repository }}
+          git push --delete origin ${{ needs.prepare-release.outputs.release_tag }}
