@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 240
 
- #  permissions:
- #     contents: write
-
     container:
       image: manjaro:latest
       options: --privileged
