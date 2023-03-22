@@ -43,10 +43,10 @@ jobs:
         name: image-build-upload
         uses: manjaro/manjaro-iso-action@main
         with:
-  #        edition: ${{ matrix.edition }}
-  #        branch: ${{ matrix.branch }}
-  #        scope: ${{ matrix.scope }}
-  #        version: ${{ steps.time.outputs.time }}
+#        edition: ${{ matrix.edition }}
+#        branch: ${{ matrix.branch }}
+#        scope: ${{ matrix.scope }}
+#        version: ${{ steps.time.outputs.time }}
           kernel: linux61
           code-name: "ShefOS"
 #         release-tag: ${{ needs.prepare-release.outputs.release_tag }}
